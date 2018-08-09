@@ -1,34 +1,40 @@
-function Player(){
-  this.x = 0;
-  this.y = 0;
-  this.xSpeed = 1;
-  this.ySpeed = 0;
-  this.total = 0;
-  this.tail = [];
+class Player {
+  constructor(brain){
+    this.x = 0;
+    this.y = 0;
+    this.xSpeed = 1;
+    this.ySpeed = 0;
+    this.total = 0;
+    this.tail = [];
 
-  this.currentDir = "RIGHT";
+    this.score = 0;
+    this.fitness = 0;
 
-  this.spawnPoint = function(){
+    this.currentDir = "RIGHT";
+  }
+
+
+  spawnPoint(){
     let cols = floor(x/scl);
     let rows = floor(y/scl);
     this.x = floor(random(cols));
     this.y = floor(random(rows));
   }
 
-  this.dir = function(x,y){
+  dir(x,y){
     this.xSpeed = x;
     this.ySpeed = y;
   }
 
-  this.update = function(){
+  update(){
     //---------------CODING TRAIN CHALLENGE SCRIPT---------------//
-  for (var i = 0; i < this.tail.length - 1; i++) {
-     this.tail[i] = this.tail[i + 1];
-   }
-   if (this.total >= 1) {
-     this.tail[this.total - 1] = createVector(this.x, this.y);
-   }
-   //----------END OF CODING TRAIN CHALLENGE SCRIPT-------------//
+    for (var i = 0; i < this.tail.length - 1; i++) {
+       this.tail[i] = this.tail[i + 1];
+     }
+     if (this.total >= 1) {
+       this.tail[this.total - 1] = createVector(this.x, this.y);
+     }
+     //----------END OF CODING TRAIN CHALLENGE SCRIPT-------------//
 
     this.x = this.x + this.xSpeed * scl;
     this.y = this.y + this.ySpeed * scl;
@@ -36,18 +42,24 @@ function Player(){
     this.x = constrain(this.x,0, x - scl);
     this.y = constrain(this.y,0, y - scl);
 
-
+    //-------Check col with our tail----------//
+    for(var i = 0; i < this.tail.length; i++){
+      if(this.x == this.tail[i].x && this.y == this.tail[i].y){
+        this.restart();
+      }
+    }
   }
 
-  this.show = function(){
+  show(){
     fill(255);
     for (var i = 0; i < this.tail.length; i++) {
       rect(this.tail[i].x, this.tail[i].y, scl, scl);
     }
     rect(this.x, this.y, scl, scl);
+
   }
 
-  this.eat = function(pos){
+  eat(pos){
     var d = dist(this.x, this.y, pos.x, pos.y);
     if(d<10){
       this.total++;
@@ -57,7 +69,7 @@ function Player(){
     }
   }
 
-  this.checkDie = function(next){
+  checkDie(next){
     if(this.currentDir === "RIGHT" && next === "LEFT"){
       this.restart();
     }if(this.currentDir === "LEFT" && next === "RIGHT"){
@@ -69,7 +81,7 @@ function Player(){
     }
   }
 
-  this.restart = function(){
+  restart(){
     this.x = 0;
     this.y = 0;
     this.xSpeed = 1;
@@ -78,7 +90,7 @@ function Player(){
     this.tail = [];
   }
 
-  this.checkOutOfMap = function(){
+  checkOutOfMap(){
     if(this.tail.length > 0){
       let distance = dist(this.x, this.y, this.tail[this.tail.length-1].x, this.tail[this.tail.length-1].y);
       if(distance < 1){
